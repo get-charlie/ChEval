@@ -17,8 +17,9 @@ double evaluate(const char * expression);
 #define MAX_TOKS    100
 
 typedef enum{
-    NUM = 0, ADD = 3, SUB = 3, MUL = 4, DIV = 4, OP_PAR = 1, CL_PAR = 2, ERROR = -1,
+    NUM, ADD, SUB, MUL, DIV, OP_PAR, CL_PAR, ERROR,
 }TokenType;
+
 
 typedef struct{
     char* content;
@@ -30,19 +31,6 @@ typedef struct{
     size_t size;
 }TokenList;
 
-// Test if the string contains invalid chars. true if ok false otherwise.
-static bool validate_string(const char * expression){
-    size_t len = strlen(expression);
-    int i = 0;
-    bool ok = true;
-    while(i < len && ok){
-        if(strchr(VALID_CHARS, expression[i]) == NULL){
-            ok = false;
-        }
-        i++;
-    }
-    return ok;
-}
 
 static TokenType get_token_type(const char * content){
    if(strcmp(content, "+") == 0){
@@ -62,6 +50,23 @@ static TokenType get_token_type(const char * content){
    }
 }
 
+int get_priority(Token tok){
+    switch(tok.type){
+        case NUM:
+            return 0;
+        case OP_PAR:
+        case CL_PAR:
+            return 1;
+        case ADD:
+        case SUB:
+            return 2;
+        case MUL:
+        case DIV:
+            return 3;
+        default:
+            return -1;
+    }
+}
 static void list_push(TokenList* list, Token tok){
     if(list->size < MAX_TOKS){
         list->tokens[list->size] = tok;
@@ -84,6 +89,19 @@ static Token list_peek(TokenList list){
     return tok;
 }
 
+// Test if the string contains invalid chars. true if ok false otherwise.
+static bool validate_string(const char * expression){
+    size_t len = strlen(expression);
+    int i = 0;
+    bool ok = true;
+    while(i < len && ok){
+        if(strchr(VALID_CHARS, expression[i]) == NULL){
+            ok = false;
+        }
+        i++;
+    }
+    return ok;
+}
 // Takes the expression and returns an array of tokens
 static TokenList tokenizer(const char * expression){ // TODO make tokenizer not depend on white space
     TokenList list; 
@@ -98,7 +116,6 @@ static TokenList tokenizer(const char * expression){ // TODO make tokenizer not 
     }
     return list;
 }
-
 
 static TokenList get_rpn(TokenList in){ // Shunting Yard algorithm
     TokenList out; out.size = 0;
@@ -115,7 +132,7 @@ static TokenList get_rpn(TokenList in){ // Shunting Yard algorithm
             }
             list_pop(&stack);
         }else{
-            if(tok.type <= list_peek(stack).type){
+            if(get_priority(tok) <= get_priority(list_peek(stack))){
                 list_push(&out, list_pop(&stack));
             }
             list_push(&stack, tok);
@@ -125,6 +142,44 @@ static TokenList get_rpn(TokenList in){ // Shunting Yard algorithm
         list_push(&out, list_pop(&stack));
     }
     return out;
+}
+
+static double operation(double a, double b, Token tok){
+    switch(tok.type){
+        case ADD:
+            return a + b;
+        case SUB:
+            return a - b;
+        case MUL:   
+            return a * b;
+        case DIV:
+            return a / b;
+        default:
+            return NAN;
+    }
+}
+
+static double calculate_result(TokenList rpn){
+    double stack[MAX_TOKS];
+    size_t size = 0;
+    for(int i = 0; i < rpn.size; i++){
+        Token tok = rpn.tokens[i];
+        if(tok.type == NUM){
+            stack[size] = strtod(tok.content , NULL); 
+            size++;
+        }else if(size >= 2){
+            double a = stack[size - 2];
+            double b = stack[size - 1];
+            stack[size-2] = operation(a, b, tok);
+            size--;
+        }else{
+            return NAN; // An error acoured
+        }
+    }
+    if(size != 1){
+        return NAN;
+    }
+    return stack[size-1];
 }
 
 #include <stdio.h> // Testing
@@ -143,7 +198,7 @@ double evaluate(const char * expression){
     print_list(list);
     TokenList rpn = get_rpn(list);
     print_list(rpn);
-    return 0.0;
+    return calculate_result(rpn);
 }
 
 
