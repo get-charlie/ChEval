@@ -195,9 +195,9 @@ double evaluate(const char * expression){
         return NAN;
     } 
     TokenList list = tokenizer(expression);
-    print_list(list);
+    // print_list(list);
     TokenList rpn = get_rpn(list);
-    print_list(rpn);
+    // print_list(rpn);
     return calculate_result(rpn);
 }
 
