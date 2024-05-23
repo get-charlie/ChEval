@@ -8,7 +8,7 @@
 
 // Takes an expression as a string and returns the result as a double value.
 // If an error is detected NAN is returned. 
-double evaluate(const char * expression);
+double cheval(const char * expression);
 
 #ifdef  IMPLEMENT_CHEVAL
 
@@ -192,6 +192,10 @@ static double evaluate_rpn(TokenList rpn){
         if(tok.type == NUM){
             stack[size] = strtod(tok.content, NULL); 
             size++;
+        }else if(size == 1 && (tok.type == ADD ||tok.type == SUB)){
+            if(tok.type == SUB){
+                stack[size-1] *= -1;
+            }
         }else if(size >= 2){
             double a = stack[size - 2];
             double b = stack[size - 1];
@@ -211,25 +215,14 @@ static double evaluate_rpn(TokenList rpn){
     return stack[size-1];
 }
 
-#include <stdio.h> // Debugging
-static void print_list(TokenList list){
-    for(int i = 0; i < list.size && list.tokens[i].type != ERROR; i++){
-        printf("%s ", list.tokens[i].content);
-    }
-    printf("\n");
-}
-double evaluate(const char * expression){
+double cheval(const char * expression){
     if(!input_check(expression)){
         return NAN;
     } 
-    TokenList list = tokenizer(expression);
-    // print_list(list);
-    TokenList rpn = get_rpn(list);
-    // print_list(rpn);
-    return evaluate_rpn(rpn);
+    TokenList tok_list = tokenizer(expression);
+    tok_list = get_rpn(tok_list);
+    return evaluate_rpn(tok_list);
 }
-
-
 
 #endif // DEFINE_CHEVAL
 #endif
