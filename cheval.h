@@ -32,7 +32,7 @@ typedef struct{
     size_t size;
 }TokenList;
 
-// Auxiliary token list/stack funcions
+// Helper token list/stack funcions
 static void list_push(TokenList* list, Token tok){
     if(list->size < MAX_TOKS){
         list->tokens[list->size] = tok;
@@ -54,13 +54,13 @@ static Token list_peek(TokenList list){
     }
     return tok;
 }
-// Auxiliary function to append a char to the end of a string
+// Helper function to append a char to the end of a string
 static void append_char(char* str, char c){
     size_t len = strlen(str);
     str[len] = c;
     str[len+1] = '\0';
 }
-// Auxiliary function to get the type of a token
+// Helper function to get the type of a token
 static TokenType get_token_type(const char * content){
    if(strcmp(content, "+") == 0){
         return ADD;
@@ -78,7 +78,7 @@ static TokenType get_token_type(const char * content){
         return NUM;
    }
 }
-// Auxiliary function to get the priority of a token
+// Helper function to get the priority of a token
 static int get_token_priority(Token tok){
     switch(tok.type){
         case NUM:
@@ -96,7 +96,7 @@ static int get_token_priority(Token tok){
             return -1;
     }
 }
-// Auxiliary function for elemental operations
+// Helper function for elemental operations
 static double operation(double a, double b, Token tok){
     switch(tok.type){
         case ADD:
@@ -214,7 +214,7 @@ static double evaluate_rpn(TokenList rpn){
     }
     return stack[size-1];
 }
-
+// API funciton
 double cheval(const char * expression){
     if(!input_check(expression)){
         return NAN;
