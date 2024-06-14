@@ -16,7 +16,7 @@ double cheval(const char * expression);
 #define OPERATORS "+-*/()"
 #define VALID_CHARS OPERANDS OPERATORS " "
 #define MAX_TOKS    100
-#define TOK_LEN     100
+#define TOK_LEN     32
 
 typedef enum{
     NUM, ADD, SUB, MUL, DIV, OP_PAR, CL_PAR, ERROR,
