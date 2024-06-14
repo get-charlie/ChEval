@@ -1,3 +1,8 @@
+/*
+Simple stb-style header only library providing an evaluation function.
+Made by get-charlie
+*/
+
 #ifndef _CH_EVAL_
 #define _CH_EVAL_
 

@@ -1,12 +1,9 @@
 // Calculator example made with ChEval
-
 #define IMPLEMENT_CHEVAL
 #include "cheval.h"
 
-
-#include <stdlib.h>
 #include <stdio.h>
-#include <math.h>       
+#include <math.h>
 
 int main (int argc, char **argv){
     if(argc != 2){
