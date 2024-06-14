@@ -11,5 +11,6 @@ will return NAN.
 To use this library define `IMPLEMENT_CHEVAL` and then include `cheval.h`.
 Then you can use the function at your convenience.
 A simple terminal calculator example is included for reference.
-
+## License
+This projects is under a permissive MIT license.
 
